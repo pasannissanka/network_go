@@ -1,8 +1,7 @@
-package net
+package client
 
 import (
 	"fmt"
-	"log"
 	"math"
 	"regexp"
 	"strconv"
@@ -89,7 +88,7 @@ func iPv4RangeToCIDRRange(ipStart string, ipEnd string) (cidrs []string, err err
 	ipEndUint32 := iPv4ToUint32(ipEnd)
 
 	if ipStartUint32 > ipEndUint32 {
-		log.Fatalf("start IP:%s must be less than end IP:%s", ipStart, ipEnd)
+		fmt.Printf("start IP:%s must be less than end IP:%s", ipStart, ipEnd)
 	}
 
 	for ipEndUint32 >= ipStartUint32 {

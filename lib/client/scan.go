@@ -1,4 +1,4 @@
-package net
+package client
 
 import (
 	"fmt"
@@ -6,11 +6,13 @@ import (
 	"net"
 	"sync"
 	"time"
+
+	"github.com/pasannissanka/network_go/server"
 )
 
 var (
 	CIDRs     []string
-	port      uint16 = ServerData.UDP_L
+	port      uint16 = server.ServerData.UDP_L
 	portStart uint16 = 1
 	portEnd   uint16 = 65535
 	isTest    bool   = true
@@ -21,7 +23,7 @@ var (
 func Scan(ip string) {
 	// If the test flag is set, use the server IP to scan
 	if isTest {
-		ip = ServerData.IP
+		ip = server.ServerData.IP
 	}
 
 	CIDRs, err := GetCIDRs(ip)

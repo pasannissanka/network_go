@@ -1,16 +1,16 @@
-package net_test
+package client_test
 
 import (
 	"fmt"
 	"testing"
 
-	"github.com/pasannissanka/network_go/net"
+	"github.com/pasannissanka/network_go/client"
 )
 
 func TestIP(t *testing.T) {
 	t.Log("Testing IP to CIDR conversion")
 
-	cidr, err := net.GetCIDRs("127.0.0.1")
+	cidr, err := client.GetCIDRs("127.0.0.1")
 
 	if err != nil {
 		t.Error(err)
