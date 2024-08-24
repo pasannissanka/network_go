@@ -5,17 +5,35 @@ import (
 	"encoding/gob"
 	"fmt"
 	"net"
-	"os"
 	"strconv"
+	"time"
 
 	"github.com/pasannissanka/network_go/server"
 )
 
-func Connect(conn net.Conn) {
+func Connect(conn net.Conn) error {
+	fmt.Println("Connecting to server...")
+
+	err := conn.SetReadDeadline(time.Now().Add(5 * time.Second))
+
+	if err != nil {
+		fmt.Println("SetReadDeadline failed:", err)
+		// do something else, for example create new conn
+		return fmt.Errorf("SetReadDeadline failed: %s", err)
+	}
+
+	fmt.Fprintf(conn, "Hi UDP Server, How are you doing?")
+
 	// Create a temp buffer
 	p := make([]byte, 2048)
 
-	conn.Read(p)
+	_, err = conn.Read(p)
+
+	fmt.Println("Received message from server: ", string(p))
+
+	if err != nil {
+		return fmt.Errorf("error reading from server: %s", err)
+	}
 
 	// convert bytes into Buffer (which implements io.Reader/io.Writer)
 	tmpBuff := bytes.NewBuffer(p)
@@ -24,37 +42,44 @@ func Connect(conn net.Conn) {
 	// creates a decoder object
 	gobObjDec := gob.NewDecoder(tmpBuff)
 	// decodes buffer and unmarshals it into a Message struct
-	gobObjDec.Decode(tmpStruct)
+	err = gobObjDec.Decode(tmpStruct)
 
-	fmt.Printf("Received response from server: [%s]\n", tmpStruct)
+	if err != nil {
+		fmt.Println("Error decoding from server: ", err)
+		return fmt.Errorf("error decoding from server: %s", err)
+	}
 
-	connect(*tmpStruct)
+	fmt.Printf("Received message: %v\n", *tmpStruct)
+
+	return connect(*tmpStruct)
 }
 
-func connect(message server.Message) {
+func connect(message server.Message) error {
 	port, err := strconv.Atoi(message.PORT)
 
 	if err != nil {
-		fmt.Println("Error converting port to integer: ", err)
+		return fmt.Errorf("error converting port to int: %s", err)
 	}
 
-	addr := net.TCPAddr{
-		IP:   net.IP(message.IP),
-		Port: port,
+	tcpAddr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%d", message.IP, port))
+
+	if err != nil {
+		println("ResolveTCPAddr failed:", err.Error())
+		return fmt.Errorf("TCP Resolve failed: %s", err)
 	}
 
 	strEcho := "Hello TCP Server!"
 
-	tcpConn, err := net.DialTCP("tcp", nil, &addr)
+	tcpConn, err := net.DialTCP("tcp", nil, tcpAddr)
 	if err != nil {
 		println("Dial failed:", err.Error())
-		os.Exit(1)
+		return fmt.Errorf("TCP Dial failed: %s", err)
 	}
 
 	_, err = tcpConn.Write([]byte(strEcho))
 	if err != nil {
 		println("Write to server failed:", err.Error())
-		os.Exit(1)
+		return fmt.Errorf("TCP Heartbeat check failed: %s", err)
 	}
 
 	println("write to server = ", strEcho)
@@ -64,10 +89,19 @@ func connect(message server.Message) {
 	_, err = tcpConn.Read(reply)
 	if err != nil {
 		println("Write to server failed:", err.Error())
-		os.Exit(1)
+		return fmt.Errorf("TCP Heartbeat check failed: %s", err)
 	}
 
 	println("reply from server=", string(reply))
 
-	defer tcpConn.Close()
+	connection := Connection{
+		Conn: tcpConn,
+		Id:   message.ID,
+		Ip:   message.IP,
+		Port: port,
+	}
+
+	AddConnection(connection)
+
+	return nil
 }

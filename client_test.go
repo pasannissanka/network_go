@@ -1,27 +1,27 @@
-package main
+package main_test
 
 import (
-	"fmt"
+	"testing"
 
+	"fmt"
 	"net"
+	"time"
 
 	"github.com/pasannissanka/network_go/client"
 )
 
-func main() {
-	// timeout := time.Microsecond * 2000
+func TestClientConnect(t *testing.T) {
+	timeout := time.Microsecond * 2000
 	addr := fmt.Sprintf("%s:%d", "127.0.0.1", 8856)
 
-	fmt.Printf("Address to connect: %s\n", addr)
-
-	c, e := net.Dial("udp", addr)
+	c, e := net.DialTimeout("udp", addr, timeout)
 
 	if e != nil {
-		fmt.Print(e)
+		t.Error(e)
 	}
 
 	if c == nil {
-		fmt.Errorf("Connection failed")
+		t.Error("Connection failed")
 	}
 
 	fmt.Printf("Connection to %s successful\n", addr)

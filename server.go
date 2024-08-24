@@ -11,7 +11,7 @@ func main() {
 
 	serverData := server.Server{
 		IP:    "127.0.0.1",
-		UDP_L: 8888,
+		UDP_L: 8856,
 		TCP:   8881,
 	}
 
