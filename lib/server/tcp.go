@@ -17,16 +17,17 @@ func handleConnection(conn net.Conn) {
 		netData, err := bufio.NewReader(conn).ReadString('\n')
 
 		if err != nil {
-			log.Fatal(err)
-			return
+			log.Printf("[ERROR]>: %s\n", err)
+			break
 		}
 
 		temp := strings.TrimSpace(string(netData))
 		if temp == "STOP" {
+			log.Printf("Exiting TCP server!")
 			break
 		}
 
-		log.Println(temp)
+		log.Printf("> %s", temp)
 
 		result := strconv.Itoa(10) + "\n"
 		conn.Write([]byte(string(result)))

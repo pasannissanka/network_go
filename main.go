@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"sync"
+	"time"
 
 	"os"
 
@@ -39,11 +41,22 @@ func main() {
 		TCP:   uint16(Env.TCP_PORT),
 	}
 
-	defer server.Init(serverData, Env.Id)
+	var wg sync.WaitGroup
+	wg.Add(1)
 
 	if !Env.IS_MASTER {
-		go connectToMaster()
+		go func() {
+			defer wg.Done()
+			connectToMaster()
+		}()
+	} else {
+		go func() {
+			defer wg.Done()
+			server.Init(serverData, Env.Id)
+		}()
 	}
+
+	wg.Wait()
 }
 
 func processEnv(env string) {
@@ -124,6 +137,8 @@ func connectToMaster() {
 		PortEnd:   8890,
 	})
 
-	client.Scan(fmt.Sprintf("%s/32", Env.Ip))
-
+	for {
+		client.Scan(fmt.Sprintf("%s/32", Env.Ip))
+		time.Sleep(5 * time.Minute)
+	}
 }

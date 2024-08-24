@@ -43,7 +43,7 @@ func EnableTestMode(options *TestModeOptions) {
 }
 
 func Scan(ip string) {
-	fmt.Println("Scanning...")
+	log.Println("Scanning...")
 	// If the test flag is set, use the server IP to scan
 	// CIDRs, err := GetCIDRs(ip)
 
@@ -79,11 +79,11 @@ func scan(cidr string) (err error) {
 
 	ip, ipNet, err = net.ParseCIDR(cidr)
 
-	fmt.Printf("ip: %v\n", ip)
-	fmt.Printf("ipNet: %v\n", ipNet)
+	log.Printf("ip: %v\n", ip)
+	log.Printf("ipNet: %v\n", ipNet)
 
 	if err != nil {
-		fmt.Printf("CIDR address not in correct format: %s", err)
+		log.Printf("CIDR address not in correct format: %s", err)
 		return err
 	}
 
@@ -94,17 +94,17 @@ func scan(cidr string) (err error) {
 
 			for port := portStart; port <= portEnd; port++ {
 				addr := fmt.Sprintf("%s:%d", ip, port)
-				fmt.Printf("scanning addr: %s://%s\n", "udp", addr)
+				log.Printf("scanning addr: %s://%s\n", "udp", addr)
 
 				c, e := net.DialTimeout("udp", addr, timeout)
 				if e == nil {
-					fmt.Printf("udp://%s is alive and reachable\n", addr)
+					log.Printf("udp://%s is alive and reachable\n", addr)
 					err := Connect(c)
 
 					if err == nil {
-						fmt.Printf("Connection to %s successful\n", addr)
+						log.Printf("Connection to %s successful\n", addr)
 					} else {
-						fmt.Printf("Connection to %s failed: %s\n", addr, err)
+						log.Printf("Connection to %s failed: %s\n", addr, err)
 					}
 				}
 
