@@ -48,7 +48,7 @@ func Init(serverData Server, id int) {
 
 	// Start the TCP and UDP servers
 	defer tcp()
-	defer udp()
+	go udp()
 
 	log.Println("Server started, press <CTRL+C> to exit")
 }

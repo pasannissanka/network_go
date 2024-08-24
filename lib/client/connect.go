@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"fmt"
+	"log"
 	"net"
 	"strconv"
 	"time"
@@ -12,16 +13,17 @@ import (
 )
 
 func Connect(conn net.Conn) error {
-	fmt.Println("Connecting to server...")
+	log.Println("Connecting to server...")
 
 	err := conn.SetReadDeadline(time.Now().Add(5 * time.Second))
 
 	if err != nil {
-		fmt.Println("SetReadDeadline failed:", err)
+		log.Fatalf("SetReadDeadline failed: %s", err)
 		// do something else, for example create new conn
 		return fmt.Errorf("SetReadDeadline failed: %s", err)
 	}
 
+	// Send a message to server
 	fmt.Fprintf(conn, "Hi UDP Server, How are you doing?")
 
 	// Create a temp buffer
@@ -29,7 +31,7 @@ func Connect(conn net.Conn) error {
 
 	_, err = conn.Read(p)
 
-	fmt.Println("Received message from server: ", string(p))
+	log.Println("Received message from server: ", string(p))
 
 	if err != nil {
 		return fmt.Errorf("error reading from server: %s", err)
@@ -45,11 +47,11 @@ func Connect(conn net.Conn) error {
 	err = gobObjDec.Decode(tmpStruct)
 
 	if err != nil {
-		fmt.Println("Error decoding from server: ", err)
+		log.Println("Error decoding from server: ", err)
 		return fmt.Errorf("error decoding from server: %s", err)
 	}
 
-	fmt.Printf("Received message: %v\n", *tmpStruct)
+	log.Printf("Received message: %v\n", *tmpStruct)
 
 	return connect(*tmpStruct)
 }
@@ -67,7 +69,7 @@ func connect(message server.Message) error {
 	tcpAddr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%d", message.IP, port))
 
 	if err != nil {
-		println("ResolveTCPAddr failed:", err.Error())
+		log.Fatalf("ResolveTCPAddr failed: %s", err.Error())
 		return fmt.Errorf("TCP Resolve failed: %s", err)
 	}
 
@@ -75,27 +77,27 @@ func connect(message server.Message) error {
 
 	tcpConn, err := net.DialTCP("tcp", nil, tcpAddr)
 	if err != nil {
-		println("Dial failed:", err.Error())
+		log.Fatalf("Dial failed: %s", err.Error())
 		return fmt.Errorf("TCP Dial failed: %s", err)
 	}
 
 	_, err = tcpConn.Write([]byte(strEcho))
 	if err != nil {
-		println("Write to server failed:", err.Error())
+		log.Fatalf("Write to server failed: %s", err.Error())
 		return fmt.Errorf("TCP Heartbeat check failed: %s", err)
 	}
 
-	println("write to server = ", strEcho)
+	log.Printf("write to server = %s", strEcho)
 
 	reply := make([]byte, 1024)
 
 	_, err = tcpConn.Read(reply)
 	if err != nil {
-		println("Write to server failed:", err.Error())
+		log.Fatalf("Write to server failed: %s", err.Error())
 		return fmt.Errorf("TCP Heartbeat check failed: %s", err)
 	}
 
-	println("reply from server=", string(reply))
+	log.Printf("reply from server= %s", string(reply))
 
 	connection := Connection{
 		Conn: tcpConn,
