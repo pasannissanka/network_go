@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"log"
 
 	"net"
 	"sync"
@@ -20,32 +21,47 @@ var (
 	timeout   = time.Microsecond * 2000
 )
 
-func EnableTestMode() {
+type TestModeOptions struct {
+	PortStart uint16
+	PortEnd   uint16
+}
+
+func EnableTestMode(options *TestModeOptions) {
+	log.Println("Test mode enabled")
+
 	isTest = true
-	portStart = 8880
-	portEnd = 8890
+
+	if options.PortStart == 0 {
+		options.PortStart = 1
+	}
+	if options.PortEnd == 0 {
+		options.PortEnd = 65535
+	}
+
+	portStart = options.PortStart
+	portEnd = options.PortEnd
 }
 
 func Scan(ip string) {
 	fmt.Println("Scanning...")
 	// If the test flag is set, use the server IP to scan
-	CIDRs, err := GetCIDRs(ip)
+	// CIDRs, err := GetCIDRs(ip)
 
-	if err != nil {
-		fmt.Printf("not able to parse 'ips' parameter value: %s\n", err)
-	}
+	// if err != nil {
+	// 	fmt.Printf("not able to parse 'ips' parameter value: %s\n", err)
+	// }
 
 	if !isTest {
 		portStart = port
 		portEnd = port
 	}
 
-	fmt.Printf("cidrs: %v\n", CIDRs)
-	for _, cidr := range CIDRs {
-		fmt.Printf("Scanning CIDR: %s\n", cidr)
-		scan(cidr)
-	}
+	// fmt.Printf("cidrs: %v\n", CIDRs)
+	// for _, cidr := range CIDRs {
+	// 	fmt.Printf("Scanning CIDR: %s\n", cidr)
+	// }
 
+	scan(ip)
 }
 
 func scan(cidr string) (err error) {

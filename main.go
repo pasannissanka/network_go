@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/pasannissanka/network_go/lib/client"
 	"github.com/pasannissanka/network_go/lib/net"
 	"github.com/pasannissanka/network_go/lib/server"
 )
@@ -40,6 +41,9 @@ func main() {
 
 	defer server.Init(serverData, Env.Id)
 
+	if !Env.IS_MASTER {
+		go connectToMaster()
+	}
 }
 
 func processEnv(env string) {
@@ -54,7 +58,7 @@ func processEnv(env string) {
 	tcpPort := os.Getenv("TCP_PORT")
 	udpPort := os.Getenv("UDP_PORT")
 	lPort := os.Getenv("L_PORT")
-	isMaster := os.Getenv("IS_MASTER")
+	isMaster := os.Getenv("MASTER")
 
 	server_id, err := strconv.Atoi(sId)
 	if err != nil {
@@ -86,6 +90,10 @@ func processEnv(env string) {
 		is_master = false
 	}
 
+	if is_master {
+		log.Printf("Server is master\n")
+	}
+
 	ip := getLocalIP()
 
 	Env = Environment{
@@ -108,4 +116,14 @@ func getLocalIP() string {
 
 	log.Printf("Local IP: %s\n", ip)
 	return ip
+}
+
+func connectToMaster() {
+	client.EnableTestMode(&client.TestModeOptions{
+		PortStart: 8880,
+		PortEnd:   8890,
+	})
+
+	client.Scan(fmt.Sprintf("%s/32", Env.Ip))
+
 }

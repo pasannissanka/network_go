@@ -40,6 +40,15 @@ func GetConnection(id int) (connection Connection, err error) {
 	return Connection{}, fmt.Errorf("Connection not found")
 }
 
+func HasConnection(id int) bool {
+	for _, conn := range connections {
+		if conn.Id == id {
+			return true
+		}
+	}
+	return false
+}
+
 func GetConnections() []Connection {
 	return connections
 }

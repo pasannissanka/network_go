@@ -55,8 +55,11 @@ func Connect(conn net.Conn) error {
 }
 
 func connect(message server.Message) error {
-	port, err := strconv.Atoi(message.PORT)
+	if HasConnection(message.ID) {
+		return fmt.Errorf("Connection already exists")
+	}
 
+	port, err := strconv.Atoi(message.PORT)
 	if err != nil {
 		return fmt.Errorf("error converting port to int: %s", err)
 	}
