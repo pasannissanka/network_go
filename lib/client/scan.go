@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pasannissanka/network_go/server"
+	"github.com/pasannissanka/network_go/lib/server"
 )
 
 var (

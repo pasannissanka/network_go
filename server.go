@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 
-	"github.com/pasannissanka/network_go/server"
+	"github.com/pasannissanka/network_go/lib/server"
 )
 
-func main() {
+func Server() {
 	fmt.Println("Hello, World!")
 
 	serverData := server.Server{

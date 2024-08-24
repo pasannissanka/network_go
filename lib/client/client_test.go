@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/pasannissanka/network_go/client"
+	"github.com/pasannissanka/network_go/lib/client"
 )
 
 func TestIP(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 
 	"net"
 
-	"github.com/pasannissanka/network_go/client"
+	"github.com/pasannissanka/network_go/lib/client"
 )
 
 func main() {

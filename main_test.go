@@ -7,7 +7,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/pasannissanka/network_go/client"
+	"github.com/pasannissanka/network_go/lib/client"
 )
 
 func TestClientConnect(t *testing.T) {

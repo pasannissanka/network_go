@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/pasannissanka/network_go/server"
+	"github.com/pasannissanka/network_go/lib/server"
 )
 
 func Connect(conn net.Conn) error {
