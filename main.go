@@ -2,29 +2,110 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"strconv"
 
-	"net"
+	"os"
 
-	"github.com/pasannissanka/network_go/lib/client"
+	"github.com/joho/godotenv"
+	"github.com/pasannissanka/network_go/lib/net"
+	"github.com/pasannissanka/network_go/lib/server"
 )
 
+type Environment struct {
+	Id        int
+	IS_MASTER bool
+	Ip        string
+	TCP_PORT  int
+	UDP_PORT  int
+	L_PORT    int
+}
+
+var Env Environment
+
 func main() {
-	// timeout := time.Microsecond * 2000
-	addr := fmt.Sprintf("%s:%d", "127.0.0.1", 8856)
-
-	fmt.Printf("Address to connect: %s\n", addr)
-
-	c, e := net.Dial("udp", addr)
-
-	if e != nil {
-		fmt.Print(e)
+	if len(os.Args) < 2 {
+		log.Fatalf("Environment not provided")
+		os.Exit(1)
 	}
 
-	if c == nil {
-		fmt.Errorf("Connection failed")
+	env := os.Args[1]
+	processEnv(env)
+
+	serverData := server.Server{
+		IP:    Env.Ip,
+		UDP_L: uint16(Env.UDP_PORT),
+		TCP:   uint16(Env.TCP_PORT),
 	}
 
-	fmt.Printf("Connection to %s successful\n", addr)
+	defer server.Init(serverData, Env.Id)
 
-	client.Connect(c)
+}
+
+func processEnv(env string) {
+	err := godotenv.Load(fmt.Sprintf(".env.%s", env))
+
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+		os.Exit(1)
+	}
+
+	sId := os.Getenv("ID")
+	tcpPort := os.Getenv("TCP_PORT")
+	udpPort := os.Getenv("UDP_PORT")
+	lPort := os.Getenv("L_PORT")
+	isMaster := os.Getenv("IS_MASTER")
+
+	server_id, err := strconv.Atoi(sId)
+	if err != nil {
+		log.Fatalf("Environment variables - server id not found: %s", err)
+		os.Exit(1)
+	}
+
+	tcp_port, err := strconv.Atoi(tcpPort)
+	if err != nil {
+		log.Fatalf("Environment variables - TCP port not found: %s", err)
+		os.Exit(1)
+	}
+
+	udp_port, err := strconv.Atoi(udpPort)
+	if err != nil {
+		log.Fatalf("Environment variables - UDP port not found: %s", err)
+		os.Exit(1)
+	}
+
+	l_port, err := strconv.Atoi(lPort)
+	if err != nil {
+		log.Fatalf("Environment variables - L port not found: %s", err)
+		os.Exit(1)
+	}
+
+	is_master, err := strconv.ParseBool(isMaster)
+	if err != nil {
+		log.Printf("Environment variables - IS_MASTER not found: %s", err)
+		is_master = false
+	}
+
+	ip := getLocalIP()
+
+	Env = Environment{
+		Id:        server_id,
+		Ip:        ip,
+		TCP_PORT:  tcp_port,
+		UDP_PORT:  udp_port,
+		L_PORT:    l_port,
+		IS_MASTER: is_master,
+	}
+}
+
+func getLocalIP() string {
+	ip, err := net.ExternalIP()
+
+	if err != nil {
+		log.Fatalf("error getting local IP: %s", err)
+		os.Exit(1)
+	}
+
+	log.Printf("Local IP: %s\n", ip)
+	return ip
 }

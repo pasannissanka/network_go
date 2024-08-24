@@ -10,7 +10,7 @@ import (
 func TestIP(t *testing.T) {
 	t.Log("Testing IP to CIDR conversion")
 
-	cidr, err := client.GetCIDRs("127.0.0.1")
+	cidr, err := client.GetCIDRs("192.168.1.18")
 
 	if err != nil {
 		t.Error(err)

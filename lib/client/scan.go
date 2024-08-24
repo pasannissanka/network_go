@@ -22,17 +22,13 @@ var (
 
 func EnableTestMode() {
 	isTest = true
-	portStart = 8850
-	portEnd = 8860
+	portStart = 8880
+	portEnd = 8890
 }
 
 func Scan(ip string) {
 	fmt.Println("Scanning...")
 	// If the test flag is set, use the server IP to scan
-	if isTest {
-		ip = "127.0.0.1/32"
-	}
-
 	CIDRs, err := GetCIDRs(ip)
 
 	if err != nil {

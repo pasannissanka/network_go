@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log"
 )
 
 type Port struct {
@@ -48,4 +49,6 @@ func Init(serverData Server, id int) {
 	// Start the TCP and UDP servers
 	defer tcp()
 	go udp()
+
+	log.Println("Server started, press <CTRL+C> to exit")
 }
