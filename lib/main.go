@@ -9,5 +9,11 @@ import (
 func main() {
 	fmt.Println("Hello, World!")
 
-	server.Init(1)
+	serverData := server.Server{
+		IP:    "127.0.0.1",
+		UDP_L: 8888,
+		TCP:   8881,
+	}
+
+	server.Init(serverData, 1)
 }
