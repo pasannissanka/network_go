@@ -10,7 +10,11 @@ import (
 func sendResponse(conn *net.UDPConn, addr *net.UDPAddr) {
 	bin_buf := new(bytes.Buffer)
 
-	data := TCP_PORT
+	data := Message{
+		IP:   ServerData.IP,
+		PORT: fmt.Sprint(ServerData.TCP),
+		ID:   ID,
+	}
 	// create a encoder object
 	gobobj := gob.NewEncoder(bin_buf)
 	// encode buffer and marshal it into a gob object

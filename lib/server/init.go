@@ -4,10 +4,16 @@ import (
 	"fmt"
 )
 
-type Message struct {
+type Port struct {
 	IP   string
 	PORT string
 	DATA string
+}
+
+type Message struct {
+	IP   string
+	PORT string
+	ID   int
 }
 
 type Server struct {
@@ -24,30 +30,28 @@ var ServerData = Server{
 	TCP:   8881,
 }
 
-var TCP_PORT Message
-var UDP_L_PORT Message
-var UDP_R_PORT Message
+var TCP_PORT Port
+var UDP_L_PORT Port
 
-func Init() {
+var ID int
+
+func Init(id int) {
 	// Initialize the server data
-	TCP_PORT = Message{
+	TCP_PORT = Port{
 		IP:   ServerData.IP,
 		PORT: fmt.Sprint(ServerData.TCP),
 		DATA: "TCP",
 	}
 
-	UDP_L_PORT = Message{
+	UDP_L_PORT = Port{
 		IP:   ServerData.IP,
 		PORT: fmt.Sprint(ServerData.UDP_L),
 		DATA: "UDP_L",
 	}
 
-	UDP_R_PORT = Message{
-		IP:   ServerData.IP,
-		PORT: fmt.Sprint(ServerData.UDP_R),
-		DATA: "UDP_R",
-	}
+	ID = id
 
 	// Start the TCP and UDP servers
 	defer tcp()
+	go udp()
 }
