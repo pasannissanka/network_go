@@ -11,7 +11,6 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/pasannissanka/network_go/lib/client"
 	"github.com/pasannissanka/network_go/lib/net"
 	"github.com/pasannissanka/network_go/lib/server"
 )
@@ -47,7 +46,7 @@ func main() {
 	if !Env.IS_MASTER {
 		go func() {
 			defer wg.Done()
-			connectToMaster()
+			ConnectToMaster()
 		}()
 	} else {
 		go func() {
@@ -130,16 +129,4 @@ func getLocalIP() string {
 
 	log.Printf("Local IP: %s\n", ip)
 	return ip
-}
-
-func connectToMaster() {
-	client.EnableTestMode(&client.TestModeOptions{
-		PortStart: 8881,
-		PortEnd:   8881,
-	})
-
-	for {
-		client.Scan(fmt.Sprintf("%s/24", Env.Ip))
-		time.Sleep(1 * time.Minute)
-	}
 }

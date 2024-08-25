@@ -2,36 +2,28 @@ package client
 
 import (
 	"fmt"
-	"net"
 )
 
-type Connection struct {
-	Conn net.Conn
-	Id   int
-	Ip   string
-	Port int
+type Connections struct {
+	Connections []Connection
 }
 
-var (
-	connections []Connection
-)
-
-func AddConnection(conn Connection) {
+func (c *Connections) AddConnection(conn Connection) {
 	fmt.Printf("Adding connection: %v\n", conn)
-	connections = append(connections, conn)
+	c.Connections = append(c.Connections, conn)
 }
 
-func RemoveConnection(id int) {
-	for i, conn := range connections {
+func (c *Connections) RemoveConnection(id int) {
+	for i, conn := range c.Connections {
 		if conn.Id == id {
 			fmt.Printf("Removing connection: %v\n", conn)
-			connections = append(connections[:i], connections[i+1:]...)
+			c.Connections = append(c.Connections[:i], c.Connections[i+1:]...)
 		}
 	}
 }
 
-func GetConnection(id int) (connection Connection, err error) {
-	for _, conn := range connections {
+func (c *Connections) GetConnection(id int) (connection Connection, err error) {
+	for _, conn := range c.Connections {
 		if conn.Id == id {
 			fmt.Printf("Getting connection: %v\n", conn)
 			return conn, nil
@@ -40,8 +32,8 @@ func GetConnection(id int) (connection Connection, err error) {
 	return Connection{}, fmt.Errorf("Connection not found")
 }
 
-func HasConnection(id int) bool {
-	for _, conn := range connections {
+func (c *Connections) HasConnection(id int) bool {
+	for _, conn := range c.Connections {
 		if conn.Id == id {
 			return true
 		}
@@ -49,6 +41,6 @@ func HasConnection(id int) bool {
 	return false
 }
 
-func GetConnections() []Connection {
-	return connections
+func (c *Connections) GetConnections() []Connection {
+	return c.Connections
 }

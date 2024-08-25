@@ -23,12 +23,12 @@ func sendResponse(conn *net.UDPConn, addr *net.UDPAddr) {
 
 	_, err := conn.WriteToUDP(bin_buf.Bytes(), addr)
 	if err != nil {
-		fmt.Printf("Couldn't send response %v", err)
+		fmt.Printf("[UDP] Couldn't send response %v", err)
 	}
 }
 
 func udp() {
-	log.Printf("Starting UDP server on ip: %s port : %d \n", ServerData.IP, ServerData.UDP_L)
+	log.Printf("[UDP] Starting UDP server on ip: %s port : %d \n", ServerData.IP, ServerData.UDP_L)
 
 	addr := net.UDPAddr{
 		Port: int(ServerData.UDP_L),
@@ -37,7 +37,7 @@ func udp() {
 
 	conn, err := net.ListenUDP("udp4", &addr)
 	if err != nil {
-		log.Panicf("Error starting UDP server: %s \n", err)
+		log.Panicf("[UDP] Error starting UDP server: %s \n", err)
 		panic(err)
 	}
 
@@ -47,9 +47,9 @@ func udp() {
 
 	for {
 		_, remote_addr, err := conn.ReadFromUDP(p)
-		log.Printf("Read a message from %v %s \n", remote_addr, p)
+		log.Printf("[UDP] Read a message from %v %s \n", remote_addr, p)
 		if err != nil {
-			log.Fatalf("Some error  %v", err)
+			log.Fatalf("[UDP] Some error  %v", err)
 			continue
 		}
 

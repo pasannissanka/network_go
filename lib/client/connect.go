@@ -12,6 +12,8 @@ import (
 	"github.com/pasannissanka/network_go/lib/server"
 )
 
+var TcpConnections Connections
+
 func Connect(conn net.Conn) error {
 	err := conn.SetReadDeadline(time.Now().Add(5 * time.Second))
 
@@ -55,7 +57,7 @@ func Connect(conn net.Conn) error {
 func connect(message server.Message) error {
 	log.Printf("Received handshake from Node %+v", message)
 
-	if HasConnection(message.ID) {
+	if TcpConnections.HasConnection(message.ID) {
 		return fmt.Errorf("Connection already exists")
 	}
 
@@ -96,7 +98,7 @@ func connect(message server.Message) error {
 		Port: port,
 	}
 
-	AddConnection(connection)
+	TcpConnections.AddConnection(connection)
 
 	return nil
 }

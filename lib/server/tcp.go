@@ -10,24 +10,25 @@ import (
 )
 
 func handleConnection(conn net.Conn) {
-	log.Printf("Serving %s\n", conn.RemoteAddr().String())
+	addr := conn.RemoteAddr()
+	log.Printf("[TCP] Serving %s\n", addr.String())
 
 	conn.Write([]byte("Welcome to the server!\n"))
 	for {
 		netData, err := bufio.NewReader(conn).ReadString('\n')
 
 		if err != nil {
-			log.Printf("[ERROR]>: %s\n", err)
+			log.Printf("[TCP][%s][ERROR]>: %s\n", addr.String(), err)
 			break
 		}
 
 		temp := strings.TrimSpace(string(netData))
 		if temp == "STOP" {
-			log.Printf("Exiting TCP server!")
+			log.Printf("[TCP][%s] Exiting TCP server!", addr.String())
 			break
 		}
 
-		log.Printf("> %s", temp)
+		log.Printf("[TCP][%s]> %s", addr.String(), temp)
 
 		result := strconv.Itoa(10) + "\n"
 		conn.Write([]byte(string(result)))
@@ -37,12 +38,12 @@ func handleConnection(conn net.Conn) {
 }
 
 func tcp() {
-	log.Printf("Starting TCP server on ip: %s , port : %d \n", ServerData.IP, ServerData.TCP)
+	log.Printf("[TCP] Starting TCP server on ip: %s , port : %d \n", ServerData.IP, ServerData.TCP)
 
 	ln, err := net.Listen("tcp", fmt.Sprintf(": %d", ServerData.TCP))
 
 	if err != nil {
-		log.Panicf("Error starting TCP server: %s \n", err)
+		log.Panicf("[TCP] Error starting TCP server: %s \n", err)
 		panic(err)
 	}
 
@@ -52,6 +53,6 @@ func tcp() {
 			log.Fatal(err)
 		}
 
-		handleConnection(conn)
+		go handleConnection(conn)
 	}
 }
