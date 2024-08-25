@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"strconv"
 	"sync"
@@ -73,6 +74,15 @@ func processEnv(env string) {
 	lPort := os.Getenv("L_PORT")
 	isMaster := os.Getenv("MASTER")
 
+	// Create log file
+	logFile, err := os.OpenFile(fmt.Sprintf("./log/log-%s-%s-%d.log", env, sId, time.Now().Unix()), os.O_CREATE|os.O_APPEND|os.O_RDWR, 0644)
+	multi := io.MultiWriter(logFile, os.Stdout)
+	if err != nil {
+		log.Fatalf("Error opening log file: %s", err)
+	}
+
+	log.SetOutput(multi)
+
 	server_id, err := strconv.Atoi(sId)
 	if err != nil {
 		log.Fatalf("Environment variables - server id not found: %s", err)
@@ -133,12 +143,12 @@ func getLocalIP() string {
 
 func connectToMaster() {
 	client.EnableTestMode(&client.TestModeOptions{
-		PortStart: 8880,
-		PortEnd:   8890,
+		PortStart: 8881,
+		PortEnd:   8881,
 	})
 
 	for {
 		client.Scan(fmt.Sprintf("%s/24", Env.Ip))
-		time.Sleep(5 * time.Minute)
+		time.Sleep(1 * time.Minute)
 	}
 }

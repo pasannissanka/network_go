@@ -13,8 +13,6 @@ import (
 )
 
 func Connect(conn net.Conn) error {
-	log.Println("Connecting to server...")
-
 	err := conn.SetReadDeadline(time.Now().Add(5 * time.Second))
 
 	if err != nil {
@@ -30,8 +28,6 @@ func Connect(conn net.Conn) error {
 	p := make([]byte, 2048)
 
 	_, err = conn.Read(p)
-
-	log.Println("Received message from server: ", string(p))
 
 	if err != nil {
 		return fmt.Errorf("error reading from server: %s", err)
@@ -57,6 +53,8 @@ func Connect(conn net.Conn) error {
 }
 
 func connect(message server.Message) error {
+	log.Printf("Received handshake from Node %+v", message)
+
 	if HasConnection(message.ID) {
 		return fmt.Errorf("Connection already exists")
 	}

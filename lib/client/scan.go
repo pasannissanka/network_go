@@ -65,17 +65,10 @@ func Scan(ip string) {
 }
 
 func scan(cidr string) (err error) {
+	log.Printf("Scanning CIDR: %s\n", cidr)
+
 	var ip net.IP
 	var ipNet *net.IPNet
-
-	var incIP = func(ip net.IP) {
-		for j := len(ip) - 1; j >= 0; j-- {
-			ip[j]++
-			if ip[j] > 0 {
-				break
-			}
-		}
-	}
 
 	ip, ipNet, err = net.ParseCIDR(cidr)
 
@@ -87,24 +80,19 @@ func scan(cidr string) (err error) {
 		return err
 	}
 
-	for ip := ip.Mask(ipNet.Mask); ipNet.Contains(ip); incIP(ip) {
+	for ip := ip.Mask(ipNet.Mask); ipNet.Contains(ip); inc(ip) {
 		wg.Add(1)
 		go func(ip string) {
 			defer wg.Done()
 
 			for port := portStart; port <= portEnd; port++ {
 				addr := fmt.Sprintf("%s:%d", ip, port)
-				log.Printf("scanning addr: %s://%s\n", "udp", addr)
-
 				c, e := net.DialTimeout("udp", addr, timeout)
 				if e == nil {
-					log.Printf("udp://%s is alive and reachable\n", addr)
 					err := Connect(c)
 
 					if err == nil {
 						log.Printf("Connection to %s successful\n", addr)
-					} else {
-						log.Printf("Connection to %s failed: %s\n", addr, err)
 					}
 				}
 
@@ -114,5 +102,16 @@ func scan(cidr string) (err error) {
 
 	wg.Wait()
 
+	log.Print("Scan complete\n")
+
 	return err
+}
+
+func inc(ip net.IP) {
+	for j := len(ip) - 1; j >= 0; j-- {
+		ip[j]++
+		if ip[j] > 0 {
+			break
+		}
+	}
 }
