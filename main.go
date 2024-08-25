@@ -138,7 +138,7 @@ func connectToMaster() {
 	})
 
 	for {
-		client.Scan(fmt.Sprintf("%s/32", Env.Ip))
+		client.Scan(fmt.Sprintf("%s/24", Env.Ip))
 		time.Sleep(5 * time.Minute)
 	}
 }
