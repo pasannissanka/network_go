@@ -9,10 +9,11 @@ import (
 	"strconv"
 	"time"
 
+	server_net "github.com/pasannissanka/network_go/lib/net"
 	"github.com/pasannissanka/network_go/lib/server"
 )
 
-var TcpConnections Connections
+var TcpConnections server_net.Connections
 
 func Connect(conn net.Conn) error {
 	err := conn.SetReadDeadline(time.Now().Add(5 * time.Second))
@@ -57,8 +58,12 @@ func Connect(conn net.Conn) error {
 func connect(message server.Message) error {
 	log.Printf("Received handshake from Node %+v", message)
 
+	if ID == message.ID {
+		return fmt.Errorf("connection to self")
+	}
+
 	if TcpConnections.HasConnection(message.ID) {
-		return fmt.Errorf("Connection already exists")
+		return fmt.Errorf("connection already exists")
 	}
 
 	port, err := strconv.Atoi(message.PORT)
@@ -91,11 +96,12 @@ func connect(message server.Message) error {
 
 	log.Printf("reply from server= %s", string(reply))
 
-	connection := Connection{
+	connection := server_net.Connection{
 		Conn: tcpConn,
 		Id:   message.ID,
 		Ip:   message.IP,
 		Port: port,
+		Addr: tcpAddr,
 	}
 
 	TcpConnections.AddConnection(connection)

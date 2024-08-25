@@ -19,6 +19,7 @@ var (
 	isTest    bool   = true
 	wg        sync.WaitGroup
 	timeout   = time.Microsecond * 2000
+	ID        int
 )
 
 type TestModeOptions struct {
@@ -42,8 +43,12 @@ func EnableTestMode(options *TestModeOptions) {
 	portEnd = options.PortEnd
 }
 
-func Scan(ip string) {
+func Scan(ip string, id int) {
 	log.Println("Scanning...")
+
+	ID = id
+
+	log.Printf("ID: %d\n", ID)
 
 	if !isTest {
 		portStart = port

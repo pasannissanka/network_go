@@ -1,4 +1,4 @@
-package client
+package net
 
 import (
 	"fmt"
@@ -12,6 +12,7 @@ type Connection struct {
 	Id   int
 	Ip   string
 	Port int
+	Addr net.Addr
 }
 
 func (c *Connection) Connect() error {
@@ -30,5 +31,14 @@ func (c *Connection) Connect() error {
 		return fmt.Errorf("SetWriteDeadline failed: %s", err)
 	}
 
+	// Send ping and wait for pong
+
+	go c.Handle()
+
 	return nil
+}
+
+func (c *Connection) Handle() {
+
+	defer c.Conn.Close()
 }

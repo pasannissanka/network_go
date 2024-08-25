@@ -43,17 +43,16 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(1)
 
-	if !Env.IS_MASTER {
-		go func() {
-			defer wg.Done()
-			ConnectToMaster()
-		}()
-	} else {
-		go func() {
-			defer wg.Done()
-			server.Init(serverData, Env.Id)
-		}()
-	}
+	// if !Env.IS_MASTER {
+	go func() {
+		defer wg.Done()
+		ConnectToMaster()
+	}()
+	// }
+	go func() {
+		defer wg.Done()
+		server.Init(serverData, Env.Id)
+	}()
 
 	wg.Wait()
 }
