@@ -44,22 +44,11 @@ func EnableTestMode(options *TestModeOptions) {
 
 func Scan(ip string) {
 	log.Println("Scanning...")
-	// If the test flag is set, use the server IP to scan
-	// CIDRs, err := GetCIDRs(ip)
-
-	// if err != nil {
-	// 	fmt.Printf("not able to parse 'ips' parameter value: %s\n", err)
-	// }
 
 	if !isTest {
 		portStart = port
 		portEnd = port
 	}
-
-	// fmt.Printf("cidrs: %v\n", CIDRs)
-	// for _, cidr := range CIDRs {
-	// 	fmt.Printf("Scanning CIDR: %s\n", cidr)
-	// }
 
 	scan(ip)
 }
@@ -99,11 +88,9 @@ func scan(cidr string) (err error) {
 			}
 		}(ip.String())
 	}
-
 	wg.Wait()
 
 	log.Print("Scan complete\n")
-
 	return err
 }
 

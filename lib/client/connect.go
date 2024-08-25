@@ -65,27 +65,23 @@ func connect(message server.Message) error {
 	}
 
 	tcpAddr, err := net.ResolveTCPAddr("tcp", fmt.Sprintf("%s:%d", message.IP, port))
-
 	if err != nil {
 		return fmt.Errorf("TCP Resolve failed: %s", err)
 	}
-
-	strEcho := "Hello TCP Server!"
 
 	tcpConn, err := net.DialTCP("tcp", nil, tcpAddr)
 	if err != nil {
 		return fmt.Errorf("TCP Dial failed: %s", err)
 	}
 
+	strEcho := "Hello TCP Server!"
+	log.Printf("write to server = %s", strEcho)
 	_, err = tcpConn.Write([]byte(strEcho))
 	if err != nil {
 		return fmt.Errorf("TCP Heartbeat check failed: %s", err)
 	}
 
-	log.Printf("write to server = %s", strEcho)
-
 	reply := make([]byte, 1024)
-
 	_, err = tcpConn.Read(reply)
 	if err != nil {
 		return fmt.Errorf("TCP Heartbeat check failed: %s", err)

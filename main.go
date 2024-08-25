@@ -22,7 +22,6 @@ type Environment struct {
 	Ip        string
 	TCP_PORT  int
 	UDP_PORT  int
-	L_PORT    int
 }
 
 var Env Environment
@@ -71,7 +70,6 @@ func processEnv(env string) {
 	sId := os.Getenv("ID")
 	tcpPort := os.Getenv("TCP_PORT")
 	udpPort := os.Getenv("UDP_PORT")
-	lPort := os.Getenv("L_PORT")
 	isMaster := os.Getenv("MASTER")
 
 	// Create log file
@@ -101,12 +99,6 @@ func processEnv(env string) {
 		os.Exit(1)
 	}
 
-	l_port, err := strconv.Atoi(lPort)
-	if err != nil {
-		log.Fatalf("Environment variables - L port not found: %s", err)
-		os.Exit(1)
-	}
-
 	is_master, err := strconv.ParseBool(isMaster)
 	if err != nil {
 		log.Printf("Environment variables - IS_MASTER not found: %s", err)
@@ -124,7 +116,6 @@ func processEnv(env string) {
 		Ip:        ip,
 		TCP_PORT:  tcp_port,
 		UDP_PORT:  udp_port,
-		L_PORT:    l_port,
 		IS_MASTER: is_master,
 	}
 }
